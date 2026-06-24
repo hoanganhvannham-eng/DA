@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: library-api
+  profiles:
+    active: local
+  jpa:
+    open-in-view: false  
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  storage:
+    base-dir: ${BOOK_STORAGE_DIR:/data/library}
+    upload-dir: uploads/fines
+  auto-confirm:
+    cron: "0 0 0 * * *"
+    reminder-1-days: 2
+    reminder-2-days: 4
+    auto-confirm-days: 5
+  auto-cancel:
+    cron: "0 */5 * * * *"
+  auto-cancel-pending:
+    cron: "0 */5 * * * *"
+
+shipping:
+  max-delivery-attempts: 3
+  max-return-attempts: 3
+  default-carrier: MOCK_CARRIER
+  sync:
+    interval: 30000
+    created-to-picked-up-delay-minutes: 1
+    picked-up-to-in-transit-delay-minutes: 2
+    in-transit-to-delivery-delay-minutes: 5
+  simulation:
+    delivered-probability: 88
+    failed-probability: 10
+    lost-probability: 2
