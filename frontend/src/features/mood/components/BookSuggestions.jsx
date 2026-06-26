@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
 import ReadingPathModal from './ReadingPathModal'
+import { getCoverGradientPreset } from '../../book/utils/bookUiUtils'
 
 const moodColors = [
   'from-rose-500 to-pink-600',
@@ -43,36 +44,62 @@ export default function BookSuggestions({ suggestions, message, moodIndex, selec
   return (
     <>
       <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/5 p-6">
-        <div className="space-y-3">
+        {isLoggedIn && selectedMoodId && (
+          <button
+            onClick={() => setShowPathModal(true)}
+            className={`mb-4 w-full py-2.5 rounded-xl text-white text-sm font-medium bg-gradient-to-r ${color} hover:opacity-90 transition-all`}
+          >
+            Tạo lộ trình đọc
+          </button>
+        )}
+
+        {!isLoggedIn && (
+          <div className="mb-4 pb-4 border-b border-white/5 text-center">
+            <p className="text-white/30 text-xs">
+              <button onClick={() => navigate(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`)} className="text-cyan-400 hover:text-cyan-300 underline">
+                Đăng nhập
+              </button>
+              {' '}để tạo lộ trình đọc và mượn sách
+            </p>
+          </div>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {suggestions.map((book, i) => (
-            <div
-              key={book.id}
-              className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all duration-200"
-            >
-              <div className={`w-10 h-12 rounded-lg bg-gradient-to-b ${color} flex items-center justify-center text-white font-bold text-sm shadow flex-shrink-0`}>
-                {i + 1}
+            <div key={book.id} className="flex flex-col items-center">
+              <div
+                onClick={() => navigate(`/books/${book.id}`)}
+                className="relative w-44 h-64 rounded-xl overflow-hidden shadow-2xl group hover:scale-[1.03] hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer"
+              >
+                {book.imageUrl ? (
+                  <img src={book.imageUrl} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <div className={`absolute inset-0 bg-gradient-to-br ${getCoverGradientPreset(book.title)}`} />
+                )}
+                <div className="absolute top-0 left-[3px] w-[3px] h-full bg-gradient-to-r from-black/40 to-transparent z-10" />
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                <div className="relative z-10 flex flex-col justify-between h-full p-4">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-white/80 bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                      {book.categoryName}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-extrabold text-sm leading-snug line-clamp-3 drop-shadow-md">
+                      {book.title}
+                    </h3>
+                    <div className="w-6 h-0.5 bg-white/30 my-2" />
+                    <p className="text-white/70 text-xs font-medium truncate drop-shadow-md">
+                      {book.author}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-medium truncate">{book.title}</p>
-                <p className="text-white/30 text-xs mt-0.5">
-                  {book.author}
-                  {book.categoryName && <span className="ml-2 px-1.5 py-0.5 rounded bg-white/[0.05] text-white/30 text-[10px]">{book.categoryName}</span>}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-amber-400 text-xs font-medium">
-                  ★ {book.popularityScore}
-                </span>
-                <button
-                  onClick={() => navigate(`/books/${book.id}`)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.10] text-white/60 hover:bg-white/[0.15] transition-all"
-                >
-                  Chi tiết
-                </button>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-amber-400 text-xs font-medium">★ {book.popularityScore}</span>
                 {isLoggedIn && (
                   <button
                     onClick={() => navigate(`/books/${book.id}`)}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all"
+                    className="px-2 py-1 text-xs font-medium rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 transition-all"
                   >
                     Mượn
                   </button>
@@ -81,15 +108,6 @@ export default function BookSuggestions({ suggestions, message, moodIndex, selec
             </div>
           ))}
         </div>
-
-        {isLoggedIn && selectedMoodId && (
-          <button
-            onClick={() => setShowPathModal(true)}
-            className={`mt-4 w-full py-2.5 rounded-xl text-white text-sm font-medium bg-gradient-to-r ${color} hover:opacity-90 transition-all`}
-          >
-            Tạo lộ trình đọc
-          </button>
-        )}
 
         {!isLoggedIn && (
           <div className="mt-4 pt-4 border-t border-white/5 text-center">

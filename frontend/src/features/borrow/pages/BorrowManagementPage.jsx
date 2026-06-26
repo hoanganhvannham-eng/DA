@@ -2,23 +2,17 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PendingApprovalTab from '../components/PendingApprovalTab'
-import PickupConfirmationTab from '../components/PickupConfirmationTab'
-import PendingReturnsTab from '../../bookreturn/components/PendingReturnsTab'
 import AwaitingShipmentTab from '../../shipping/components/AwaitingShipmentTab'
 import DeliveryIssuesTab from '../../shipping/components/DeliveryIssuesTab'
 import ReturnRequestedTab from '../../bookreturn/components/ReturnRequestedTab'
 import ReturnIssuesTab from '../../bookreturn/components/ReturnIssuesTab'
-
 const TABS = [
   { id: 'pending', label: 'Chờ duyệt', icon: '⏳' },
-  { id: 'pickup', label: 'Chờ nhận sách', icon: '📚' },
   { id: 'shipping', label: 'Chờ giao hàng', icon: '🚚' },
-  { id: 'return', label: 'Chờ xác nhận trả', icon: '🔄' },
   { id: 'return-requested', label: 'Chờ gửi trả', icon: '📬' },
   { id: 'delivery-issues', label: 'Vấn đề giao hàng', icon: '⚠️' },
   { id: 'return-issues', label: 'Vấn đề trả sách', icon: '❌' },
 ]
-
 const tabVariants = {
   hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
@@ -28,9 +22,7 @@ const tabVariants = {
 const renderTab = (activeTab, refreshTrigger, onRefresh) => {
   switch (activeTab) {
     case 'pending': return <PendingApprovalTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
-    case 'pickup': return <PickupConfirmationTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
     case 'shipping': return <AwaitingShipmentTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
-    case 'return': return <PendingReturnsTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
     case 'return-requested': return <ReturnRequestedTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
     case 'delivery-issues': return <DeliveryIssuesTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
     case 'return-issues': return <ReturnIssuesTab refreshTrigger={refreshTrigger} onRefresh={onRefresh} />
@@ -75,7 +67,7 @@ const BorrowManagementPage = () => {
         {/* Tab Navigation */}
         <div className="mb-6 rounded-2xl border border-white/5 bg-slate-900/60 p-1.5 backdrop-blur-xl">
           <div className="overflow-x-auto">
-            <div className="grid min-w-[700px] grid-cols-7 gap-1">
+            <div className="grid min-w-[500px] grid-cols-5 gap-1">
               {TABS.map(tab => (
                 <button
                   key={tab.id}

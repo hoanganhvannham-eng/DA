@@ -68,8 +68,10 @@ export default function LoginPage() {
         navigate(returnUrl, { replace: true })
       } else {
         const role = data.user?.role
-        if (role === 'ADMIN' || role === 'LIBRARIAN') {
+        if (role === 'ADMIN') {
           navigate('/dashboard', { replace: true })
+        } else if (role === 'LIBRARIAN') {
+          navigate('/librarian/borrows', { replace: true })
         } else {
           navigate('/', { replace: true })
         }

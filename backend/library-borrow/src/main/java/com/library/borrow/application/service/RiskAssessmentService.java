@@ -45,14 +45,12 @@ public class RiskAssessmentService {
             failedFlags.add("R3");
         }
 
-        Instant joinedDate = userProfileRepository.getJoinedDateByUserId(readerId);
-        if (joinedDate == null) {
-            failedFlags.add("R4");
-        } else {
-            Instant sevenDaysAgo = Instant.now().minus(RISK_R4_GRACE_DAYS, ChronoUnit.DAYS);
-            if (joinedDate.isAfter(sevenDaysAgo)) {
-                failedFlags.add("R4");
-            }
+        if (fineTicketService.isBorrowingBlocked(readerId)) {
+            failedFlags.add("R3");
+        }
+
+        if (isLastCopy) {
+            failedFlags.add("R5");
         }
 
         if (isLastCopy) {

@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/logout").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/books", "/api/v1/books/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/recommendations", "/api/v1/recommendations/**").permitAll()
                         .requestMatchers("/api/v1/moods/public").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/v1/books", "/api/v1/books/**").hasAnyRole("LIBRARIAN", "ADMIN")

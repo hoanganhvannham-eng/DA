@@ -69,8 +69,8 @@ export default function HeroSection() {
               </svg>
               Chào mừng trở lại!
             </div>
-            <a
-              href="#features"
+            
+              <a href="#books"
               id="hero-explore-btn"
               className="group inline-flex items-center gap-2 px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold rounded-2xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 hover:-translate-y-0.5"
             >
@@ -96,14 +96,15 @@ export default function HeroSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
             </Link>
-            <a
-              href="#features"
+            
+              href="#books"
+              id="hero-view-books-btn"
               className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all duration-300"
-            >
+            <a href="">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
               </svg>
-              Xem tính năng
+              Xem sách
             </a>
           </div>
         )}

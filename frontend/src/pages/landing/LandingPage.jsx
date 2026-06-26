@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import HeroSection from './sections/HeroSection'
+import BookCatalogSection from './sections/BookCatalogSection'
 import FeaturesSection from './sections/FeaturesSection'
 import MoodSection from './sections/MoodSection'
 import StatsSection from './sections/StatsSection'
@@ -70,6 +71,7 @@ export default function LandingPage() {
 
       <Navbar />
       <main className="relative z-10">
+        <BookCatalogSection />
         <HeroSection />
         <StatsSection />
         <FeaturesSection />

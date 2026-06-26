@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getBooks, getBookDetail, createBook, updateBook, deleteBook, uploadBookCover, deleteBookCover } from '../services/bookService'
-import { getCategories } from '../services/categoryService'
+import { getBookDetail, createBook, updateBook, deleteBook, uploadBookCover, deleteBookCover } from '../services/bookService'
 import { getDepositPolicies } from '../../borrow/services/borrowService'
 import { useAuth } from '../../auth/hooks/useAuth'
-
-const SORT_OPTIONS = [
-  { value: 'name_asc', label: 'Tên A-Z' },
-  { value: 'newest_year', label: 'Mới nhất' },
-  { value: 'most_popular', label: 'Phổ biến nhất' },
-]
+import useBookList from '../hooks/useBookList'
+import BookFilters from '../components/BookFilters'
+import BookGrid from '../components/BookGrid'
+import BookPagination from '../components/BookPagination'
 
 const EMPTY_FORM = {
   title: '', author: '', publishedYear: new Date().getFullYear(),
@@ -17,32 +14,31 @@ const EMPTY_FORM = {
   replacementPrice: 0, depositPolicyId: '', customDepositRate: '',
 }
 
-const getCoverGradientPreset = (title = '') => {
-  const charCodeSum = title.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
-  const presets = [
-    'from-indigo-600 via-indigo-800 to-slate-900',
-    'from-emerald-600 via-teal-800 to-slate-900',
-    'from-violet-600 via-purple-800 to-slate-900',
-    'from-cyan-600 via-blue-800 to-slate-900',
-    'from-rose-600 via-pink-800 to-slate-900',
-  ]
-  return presets[charCodeSum % presets.length]
-}
-
 const BookListPage = () => {
   const { user } = useAuth()
-  const [books, setBooks] = useState([])
-  const [categories, setCategories] = useState([])
+
+  const {
+    books,
+    categories,
+    loading,
+    error,
+    page,
+    totalPages,
+    totalItems,
+    search,
+    searchInput,
+    categoryFilter,
+    sort,
+    setPage,
+    setSearchInput,
+    onSearchSubmit,
+    onClearSearch,
+    onCategoryChange,
+    onSortChange,
+    reload,
+  } = useBookList()
+
   const [depositPolicies, setDepositPolicies] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalItems, setTotalItems] = useState(0)
-  const [search, setSearch] = useState('')
-  const [searchInput, setSearchInput] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('')
-  const [sort, setSort] = useState('name_asc')
   const [successMessage, setSuccessMessage] = useState('')
 
   // Modal state
@@ -62,23 +58,7 @@ const BookListPage = () => {
   const [deleteError, setDeleteError] = useState('')
   const [deleting, setDeleting] = useState(false)
 
-  const loadBooks = useCallback(async () => {
-    try {
-      setLoading(true); setError(null)
-      const data = await getBooks({ page, search: search || undefined, categoryId: categoryFilter || undefined, sort })
-      setBooks(data.items || [])
-      setTotalPages(data.totalPages || 1)
-      setTotalItems(data.totalItems || 0)
-    } catch {
-      setError('Không thể tải danh sách sách')
-    } finally { setLoading(false) }
-  }, [page, search, categoryFilter, sort])
-
-  useEffect(() => { loadBooks() }, [loadBooks])
-
-  useEffect(() => {
-    getCategories().then(d => setCategories(d.categories || [])).catch(() => {})
-  }, [])
+  const isStaff = user?.role === 'LIBRARIAN' || user?.role === 'ADMIN'
 
   useEffect(() => {
     getDepositPolicies().then(d => setDepositPolicies(Array.isArray(d) ? d : [])).catch(() => {})
@@ -89,12 +69,6 @@ const BookListPage = () => {
     const t = setTimeout(() => setSuccessMessage(''), 3500)
     return () => clearTimeout(t)
   }, [successMessage])
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    setSearch(searchInput)
-    setPage(1)
-  }
 
   const ALLOWED_TYPES = ['image/jpeg', 'image/png']
   const MAX_SIZE = 5 * 1024 * 1024
@@ -169,7 +143,7 @@ const BookListPage = () => {
     if (!formData.totalQuantity || Number(formData.totalQuantity) < 1) e.totalQuantity = 'Số lượng phải > 0'
     if (!formData.depositPolicyId) e.depositPolicyId = 'Vui lòng chọn chính sách cọc'
     if (formData.replacementPrice === '' || formData.replacementPrice === null) e.replacementPrice = 'Giá trị sách không được để trống'
-    if (Number(formData.replacementPrice) < 0) e.replacementPrice = 'Giá trị sách phải >= 0'
+    else if (Number(formData.replacementPrice) <= 0) e.replacementPrice = 'Giá trị sách phải lớn hơn 0'
     return e
   }
 
@@ -204,7 +178,7 @@ const BookListPage = () => {
         await uploadBookCover(bookId, coverFile)
         setSuccessMessage(p => p === 'Thêm sách thành công' ? 'Thêm sách và ảnh bìa thành công' : 'Cập nhật sách và ảnh bìa thành công')
       }
-      closeForm(); setPage(1); loadBooks()
+      closeForm(); setPage(1); reload()
     } catch (err) {
       const msg = err.response?.data?.message || 'Thao tác thất bại'
       setFormErrors({ _global: msg })
@@ -218,7 +192,7 @@ const BookListPage = () => {
       await deleteBook(deletingBook.id)
       setDeletingBook(null)
       setSuccessMessage('Xóa sách thành công')
-      loadBooks()
+      reload()
     } catch (err) {
       setDeleteError(err.response?.data?.message || 'Xóa sách thất bại')
     } finally { setDeleting(false) }
@@ -273,7 +247,7 @@ const BookListPage = () => {
             <h1 className="font-black text-3xl text-white" style={{ textShadow: '0 0 40px rgba(34,211,238,0.3)' }}>Thư viện sách</h1>
             <p className="text-white/40 text-sm mt-1">Danh mục sách trong hệ thống thư viện</p>
           </div>
-          {(user?.role === 'LIBRARIAN' || user?.role === 'ADMIN') && (
+          {isStaff && (
             <button id="btn-add-book" onClick={openAddForm}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm transition-all duration-300 shadow-lg shadow-cyan-500/30 active:scale-95">
               <span className="text-lg leading-none">+</span> Thêm sách mới
@@ -289,115 +263,41 @@ const BookListPage = () => {
         )}
 
         {/* Filters */}
-        <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/5 p-4 flex flex-wrap gap-3">
-          <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-56">
-            <input id="search-input" type="text" value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              placeholder="Tìm theo tên sách, tác giả..."
-              className="flex-1 px-3 py-2 rounded-2xl bg-white/[0.05] border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300" />
-            <button type="submit" className="px-4 py-2 rounded-2xl bg-cyan-500 text-white text-sm font-bold shadow-lg shadow-cyan-500/20 transition-all duration-300">Tìm</button>
-            {search && <button type="button" onClick={() => { setSearchInput(''); setSearch(''); setPage(1) }}
-              className="px-3 py-2 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-sm transition-all duration-300">✕</button>}
-          </form>
-          <select id="category-filter" value={categoryFilter} onChange={e => { setCategoryFilter(e.target.value); setPage(1) }}
-            className="px-3 py-2 rounded-2xl bg-white/[0.05] border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300">
-            <option className="bg-slate-900" value="">-- Tất cả thể loại --</option>
-            {categories.map(c => <option className="bg-slate-900" key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-          <select id="sort-select" value={sort} onChange={e => { setSort(e.target.value); setPage(1) }}
-            className="px-3 py-2 rounded-2xl bg-white/[0.05] border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300">
-            {SORT_OPTIONS.map(o => <option className="bg-slate-900" key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        </div>
+        <BookFilters
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          onSearchSubmit={onSearchSubmit}
+          searchActive={!!search}
+          onClearSearch={onClearSearch}
+          categoryFilter={categoryFilter}
+          categories={categories}
+          onCategoryChange={onCategoryChange}
+          sort={sort}
+          onSortChange={onSortChange}
+        />
 
         {/* Book Grid */}
         <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/5 shadow-2xl p-6">
-          {loading ? (
-            <div className="flex items-center justify-center py-20 text-white/40 gap-3">
-              <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm">Đang tải danh sách sách...</p>
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <span className="text-4xl">⚠️</span>
-              <p className="text-rose-400 text-sm">{error}</p>
-              <button onClick={loadBooks} className="px-4 py-2 rounded-xl border border-white/10 text-white/60 hover:bg-white/[0.04] text-sm transition-all duration-300">Thử lại</button>
-            </div>
-          ) : books.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-white/40">
-              <span className="text-4xl mb-3">📚</span>
-              <p className="text-sm">{search || categoryFilter ? 'Không tìm thấy sách phù hợp.' : 'Chưa có sách nào trong hệ thống.'}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {books.map((book) => (
-                <div key={book.id} className="flex flex-col items-center">
-                  <Link
-                    to={`/books/${book.id}`}
-                    id={`book-title-${book.id}`}
-                    className="relative w-44 h-64 rounded-xl overflow-hidden shadow-2xl group hover:scale-[1.03] hover:shadow-cyan-500/20 transition-all duration-300"
-                  >
-                    {book.imageUrl ? (
-                      <img src={book.imageUrl} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
-                    ) : (
-                      <div className={`absolute inset-0 bg-gradient-to-br ${getCoverGradientPreset(book.title)}`} />
-                    )}
-                    <div className="absolute top-0 left-[3px] w-[3px] h-full bg-gradient-to-r from-black/40 to-transparent z-10" />
-                    <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-                    <div className="relative z-10 flex flex-col justify-between h-full p-4">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-white/80 bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
-                          {book.categoryName}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-extrabold text-sm leading-snug line-clamp-3 drop-shadow-md">
-                          {book.title}
-                        </h3>
-                        <div className="w-6 h-0.5 bg-white/30 my-2" />
-                        <p className="text-white/70 text-xs font-medium truncate drop-shadow-md">
-                          {book.author}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className={`text-xs font-bold ${book.availableQuantity > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {book.availableQuantity} có sẵn
-                    </span>
-                    <span className="text-white/20">·</span>
-                    <span className="text-xs text-white/40">{book.borrowedQuantity} mượn</span>
-                  </div>
-                  {(user?.role === 'LIBRARIAN' || user?.role === 'ADMIN') && (
-                    <div className="flex gap-2 mt-2">
-                      <button id={`btn-edit-${book.id}`} onClick={() => openEditForm(book)}
-                        className="px-3 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 text-xs font-semibold transition-all duration-300">
-                        Sửa
-                      </button>
-                      <button id={`btn-delete-${book.id}`} onClick={() => { setDeletingBook(book); setDeleteError('') }}
-                        className="px-3 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 text-xs font-semibold transition-all duration-300">
-                        Xóa
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          <BookGrid
+            books={books}
+            loading={loading}
+            error={error}
+            onRetry={reload}
+            emptyMessage={search || categoryFilter ? 'Không tìm thấy sách phù hợp.' : 'Chưa có sách nào trong hệ thống.'}
+            showAdminActions={isStaff}
+            onEdit={openEditForm}
+            onDelete={(book) => { setDeletingBook(book); setDeleteError('') }}
+          />
         </div>
 
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
-          <div className="flex items-center justify-between text-sm">
-            <p className="text-white/40 text-xs">Tổng: <span className="text-white font-semibold">{totalItems}</span> sách</p>
-            <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white/60 text-xs disabled:opacity-30 hover:bg-white/10 transition-all duration-300">← Trước</button>
-              <span className="px-3 py-1.5 text-white/40 text-xs">Trang <span className="text-cyan-400 font-bold">{page}</span> / {totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white/60 text-xs disabled:opacity-30 hover:bg-white/10 transition-all duration-300">Sau →</button>
-            </div>
-          </div>
+          <BookPagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            onPageChange={setPage}
+          />
         )}
       </div>
 
@@ -461,7 +361,7 @@ const BookListPage = () => {
                       try {
                         await deleteBookCover(editingBook.id)
                         setSuccessMessage('Đã xóa ảnh bìa')
-                        loadBooks()
+                        reload()
                       } catch {
                         setFormErrors({ _global: 'Xóa ảnh bìa thất bại' })
                       }

@@ -26,6 +26,8 @@ import WalletPage from '../features/wallet/pages/WalletPage'
 import MockPaymentPage from '../features/wallet/pages/MockPaymentPage'
 import PendingDepositPage from '../features/borrow/pages/PendingDepositPage'
 import PickupScanPage from '../features/borrow/pages/PickupScanPage'
+import BookReturnPage from '../features/bookreturn/pages/BookReturnPage'
+import MoodExplorePage from '../pages/landing/pages/MoodExplorePage'
 
 /**
  * Application router configuration.
@@ -62,6 +64,10 @@ const router = createBrowserRouter([
   {
     path: '/privacy',
     element: <PrivacyPage />,
+  },
+  {
+  path: '/mood',
+  element: <MoodExplorePage />,
   },
   {
     path: '/register',
@@ -154,6 +160,10 @@ const router = createBrowserRouter([
   {
     path: '/reports/detailed',
     element: <DetailedReportPage />,
+  },
+  {
+    path: '/librarian/returns',
+    element: <BookReturnPage />,
   },
   {
     path: '*',

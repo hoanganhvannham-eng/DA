@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getBookDetail, getBookMoods, updateBookMoods } from '../services/bookService'
 import { useAuth } from '../../auth/hooks/useAuth'
 import BorrowModal from '../../borrow/components/BorrowModal'
-
+import { getCoverGradientPreset } from '../utils/bookUiUtils'
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -24,6 +24,8 @@ const itemVariants = {
 
 const BookDetailPage = () => {
   const { bookId } = useParams()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user, isLoggedIn } = useAuth()
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -53,6 +55,14 @@ const BookDetailPage = () => {
   useEffect(() => {
     loadBookDetail()
   }, [loadBookDetail])
+
+  useEffect(() => {
+    if (searchParams.get('resumeBorrow') === 'true') {
+      setShowBorrowModal(true)
+      searchParams.delete('resumeBorrow')
+      setSearchParams(searchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   useEffect(() => {
     if (!bookId || !isLoggedIn || (user?.role !== 'LIBRARIAN' && user?.role !== 'ADMIN')) return
@@ -92,17 +102,17 @@ const BookDetailPage = () => {
   }
 
   // Generates a nice background gradient preset based on title length or character code
-  const getCoverGradientPreset = (title = '') => {
-    const charCodeSum = title.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
-    const presets = [
-      'from-indigo-600 via-indigo-800 to-slate-900',
-      'from-emerald-600 via-teal-800 to-slate-900',
-      'from-violet-600 via-purple-800 to-slate-900',
-      'from-cyan-600 via-blue-800 to-slate-900',
-      'from-rose-600 via-pink-800 to-slate-900',
-    ]
-    return presets[charCodeSum % presets.length]
-  }
+  // const getCoverGradientPreset = (title = '') => {
+  //   const charCodeSum = title.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  //   const presets = [
+  //     'from-indigo-600 via-indigo-800 to-slate-900',
+  //     'from-emerald-600 via-teal-800 to-slate-900',
+  //     'from-violet-600 via-purple-800 to-slate-900',
+  //     'from-cyan-600 via-blue-800 to-slate-900',
+  //     'from-rose-600 via-pink-800 to-slate-900',
+  //   ]
+  //   return presets[charCodeSum % presets.length]
+  // }
 
   if (loading) {
     return (
@@ -122,17 +132,12 @@ const BookDetailPage = () => {
         <h2 className="text-xl font-bold text-white mb-2">Đã xảy ra lỗi</h2>
         <p className="text-red-400 text-sm max-w-md mb-6">{error}</p>
         <div className="flex gap-4">
-          <Link
-            to="/books"
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
             className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold transition-all"
           >
-            Quay lại danh sách
-          </Link>
-          <button
-            onClick={loadBookDetail}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-900/40"
-          >
-            Thử lại
+            Quay lại
           </button>
         </div>
       </div>
@@ -159,16 +164,17 @@ const BookDetailPage = () => {
         
         {/* Navigation Breadcrumb */}
         <motion.div variants={itemVariants}>
-        <Link
-          to="/books"
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
           id="btn-back-to-list"
           className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Quay lại danh sách sách
-        </Link>
+          Quay lại
+        </button>
         </motion.div>
 
         {/* Two Column Detail Layout */}

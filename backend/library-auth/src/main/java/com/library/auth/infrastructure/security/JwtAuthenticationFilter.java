@@ -36,14 +36,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SessionStore sessionStore;
 
     @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        log.info("🔍 shouldNotFilter check: uri={}", request.getRequestURI());
+        return false;
+    }
+
+    @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        log.info("🟢 JwtAuthenticationFilter ENTERED: method={}, uri={}", request.getMethod(), request.getRequestURI());
 
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            log.info("🚫 No Authorization header or wrong prefix: uri={}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -52,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Claims claims = jwtTokenProvider.parseQuietly(token);
         if (claims == null) {
-            log.debug("JWT parse failed for request: {}", request.getRequestURI());
+            log.info("🚫 JWT parse failed for request: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<AuthSession> sessionOpt = sessionStore.findValidById(sessionId, Instant.now());
 
         if (sessionOpt.isEmpty()) {
-            log.debug("JWT session invalid or revoked: jti={}, uri={}", sessionId, request.getRequestURI());
+            log.info("🚫 JWT session invalid or revoked: jti={}, uri={}", sessionId, request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -73,13 +81,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 userId.toString(),
                 null,
-                List.of(new SimpleGrantedAuthority(authority))
-        );
+                List.of(new SimpleGrantedAuthority(authority)));
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.debug("JWT authentication set: userId={}, role={}, jti={}", userId, role, sessionId);
+        log.info("🔐 JWT authentication set: userId={}, role={}, authority={}, uri={}", userId, role, authority,
+                request.getRequestURI());
 
         filterChain.doFilter(request, response);
     }

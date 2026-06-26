@@ -22,4 +22,6 @@ public class CreateReturnRequest {
 
     @Size(max = 255, message = "Địa chỉ tối đa 255 ký tự")
     private String pickupAddress;
+
+    private boolean staffOverride = false;
 }

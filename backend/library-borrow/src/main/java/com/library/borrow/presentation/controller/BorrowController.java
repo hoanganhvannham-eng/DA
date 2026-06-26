@@ -197,6 +197,7 @@ public class BorrowController {
             case "AWAITING_PICKUP" -> ResponseEntity.ok(borrowService.getAwaitingPickupBorrows());
             case "AWAITING_SHIPMENT" -> ResponseEntity.ok(borrowService.getAwaitingShipmentBorrows());
             case "APPROVED_WAITING_PAYMENT" -> ResponseEntity.ok(borrowService.getApprovedWaitingPaymentBorrows());
+            case "BORROWING" -> ResponseEntity.ok(borrowService.getBorrowingBorrows());
             default ->
                 throw new StatusFilterInvalidException();
         };

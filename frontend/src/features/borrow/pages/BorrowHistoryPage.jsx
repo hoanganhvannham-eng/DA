@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { QRCodeSVG } from 'qrcode.react'
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react'
 import { getMyHistory, confirmDelivery, reportDeliveryIssue, cancelBorrow } from '../services/borrowService'
 import BookReturnRequestModal from '../../bookreturn/components/BookReturnRequestModal'
 import CancelConfirmModal from '../components/CancelConfirmModal'
@@ -144,7 +144,7 @@ function renderStatusFields(record) {
         )
         fields.push(
           <div key="pickupQR" className="sm:col-span-1">
-            <QRCodeSVG value={record.pickupCode} size={64} bgColor="transparent" fgColor="#22d3ee" />
+            <QRCodeSVG value={record.pickupCode} size={64} bgColor="#ffffff" fgColor="#0f172a" />
           </div>
         )
       }
@@ -198,7 +198,13 @@ function renderStatusFields(record) {
         fields.push(
           <div key="address" className="sm:col-span-2">
             <span className="text-white/40">Địa chỉ giao: </span>
-            <span className="text-white/80">{record.shippingAddress}</span>
+            <span className="text-white/80">{{
+            IN_TRANSIT: 'Đang vận chuyển',
+            DELIVERED: 'Đã giao',
+            FAILED: 'Giao thất bại',
+            LOST: 'Mất hàng',
+            PENDING: 'Chờ xử lý',
+            }[record.shippingStatus] || record.shippingStatus}</span>
           </div>
         )
       }
@@ -457,13 +463,14 @@ function renderActionButtons(record, onReturnClick, onConfirmDelivery, onReportI
   return btns
 }
 
-function BorrowRecordCard({ record, onReturnClick, onConfirmDelivery, onReportIssue, onCancelClick }) {
+function BorrowRecordCard({ record, onReturnClick, onConfirmDelivery, onReportIssue, onCancelClick, onShowDetail }) {
   const status = record.status
 
   return (
     <motion.div variants={itemVariants} style={{ perspective: 1000 }}>
-      <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:border-white/10 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/5">
-        <div className="flex items-start justify-between gap-3">
+      <div
+        onClick={() => onShowDetail(record)}
+        className="bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:border-white/10 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/5 cursor-pointer"><div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h3 className="text-base font-semibold text-white truncate">{record.bookTitle}</h3>
             {record.bookAuthor && (
@@ -571,6 +578,7 @@ export default function BorrowHistoryPage() {
   const [cancelModalRecord, setCancelModalRecord] = useState(null)
   const [notificationMsg, setNotificationMsg] = useState(null)
   const [notificationType, setNotificationType] = useState('success')
+  const [detailRecord, setDetailRecord] = useState(null)
   const size = 10
 
   const fetchHistory = useCallback(async () => {
@@ -709,6 +717,7 @@ export default function BorrowHistoryPage() {
                   onConfirmDelivery={handleConfirmDelivery}
                   onReportIssue={(rec) => setIssueModalRecord(rec)}
                   onCancelClick={(rec) => setCancelModalRecord(rec)}
+                  onShowDetail={(rec) => setDetailRecord(rec)}
                 />
               ))}
             </motion.div>
@@ -790,6 +799,148 @@ export default function BorrowHistoryPage() {
           onSubmit={handleCancelBorrow}
           onClose={() => setCancelModalRecord(null)}
         />
+      )}
+      {detailRecord && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setDetailRecord(null)}
+        >
+          <div
+            className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white">{detailRecord.bookTitle}</h2>
+                {detailRecord.bookAuthor && <p className="text-white/40 text-sm mt-0.5">{detailRecord.bookAuthor}</p>}
+              </div>
+              <button onClick={() => setDetailRecord(null)} className="text-white/40 hover:text-white transition-colors ml-4">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Thông tin đơn</p>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <span className="text-white/40">Trạng thái:</span>
+                  <StatusBadge status={detailRecord.status} />
+                </div>
+                {detailRecord.fulfillmentMethod && (
+                  <div className="mt-1.5">
+                    <span className="text-white/40">Phương thức: </span>
+                    <span className="text-white/70">{detailRecord.fulfillmentMethod === 'DELIVERY' ? 'Giao hàng' : 'Nhận tại thư viện'}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl space-y-1.5">
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Thời gian</p>
+                {detailRecord.createdAt && (
+                  <div><span className="text-white/40">Ngày tạo: </span><span className="text-white/70">{new Date(detailRecord.createdAt).toLocaleString('vi-VN')}</span></div>
+                )}
+                {detailRecord.borrowDate && (
+                  <div><span className="text-white/40">Ngày mượn: </span><span className="text-white/70">{new Date(detailRecord.borrowDate).toLocaleDateString('vi-VN')}</span></div>
+                )}
+                {detailRecord.dueDate && (
+                  <div><span className="text-white/40">Hạn trả: </span><span className="text-white/70">{new Date(detailRecord.dueDate).toLocaleDateString('vi-VN')}</span></div>
+                )}
+                {detailRecord.returnedAt && (
+                  <div><span className="text-white/40">Ngày trả: </span><span className="text-white/70">{new Date(detailRecord.returnedAt).toLocaleDateString('vi-VN')}</span></div>
+                )}
+              </div>
+
+              {detailRecord.pickupCode && (
+                <div className="p-3 bg-cyan-500/5 border border-cyan-500/20 rounded-xl">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-3">Mã nhận sách</p>
+                  <div className="flex items-center gap-4">
+                    <QRCodeCanvas
+                    id="qr-canvas-download"
+                    value={detailRecord.pickupCode}
+                    size={80}
+                    bgColor="#ffffff"
+                    fgColor="#0f172a"
+                  />
+                    <div>
+                      <span className="text-cyan-400 font-mono font-bold text-lg block">{detailRecord.pickupCode}</span>
+                      <div className="flex gap-2 mt-1">
+                        <button
+                          onClick={() => navigator.clipboard.writeText(detailRecord.pickupCode)}
+                          className="px-2 py-1 text-xs rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors"
+                        >
+                          Sao chép
+                        </button>
+                        <button
+                          onClick={() => {
+                            const canvas = document.getElementById('qr-canvas-download')
+                            if (!canvas) return
+                            const url = canvas.toDataURL('image/png')
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = `QR-${detailRecord.pickupCode}.png`
+                            a.click()
+                          }}
+                          className="px-2 py-1 text-xs rounded-lg bg-white/5 text-white/50 border border-white/10 hover:bg-white/10 hover:text-white transition-colors"
+                        >
+                          Lưu ảnh
+                        </button>
+                      </div>
+                      <p className="text-white/30 text-xs mt-1">Đưa mã này cho nhân viên thư viện</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {detailRecord.rejectionReason && (
+                <div className="p-3 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Lý do từ chối</p>
+                  <p className="text-rose-300 text-sm">{detailRecord.rejectionReason}</p>
+                </div>
+              )}
+              {(detailRecord.trackingNumber || detailRecord.shippingAddress || detailRecord.shippingStatus) && (
+                <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl space-y-1.5">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Vận chuyển</p>
+                  {detailRecord.trackingNumber && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-white/40">Mã tracking: </span>
+                      <span className="text-cyan-400 font-mono">{detailRecord.trackingNumber}</span>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(detailRecord.trackingNumber)}
+                        className="p-1 rounded hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+                        title="Sao chép"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  {detailRecord.shippingStatus && (
+                    <div><span className="text-white/40">Trạng thái vận chuyển: </span><span className="text-white/70">{{
+                      IN_TRANSIT: 'Đang vận chuyển',
+                      DELIVERED: 'Đã giao',
+                      FAILED: 'Giao thất bại',
+                      LOST: 'Mất hàng',
+                      PENDING: 'Chờ xử lý',
+                    }[detailRecord.shippingStatus] || detailRecord.shippingStatus}</span></div>
+                  )}
+                  {detailRecord.shippingAddress && (
+                    <div><span className="text-white/40">Địa chỉ giao: </span><span className="text-white/70">{detailRecord.shippingAddress}</span></div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button onClick={() => setDetailRecord(null)}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-white/5 text-white/40 hover:bg-white/10 transition-colors">
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -35,7 +35,7 @@ public class ReturnController {
     private final ReturnService returnService;
 
     @PostMapping
-    @PreAuthorize("hasRole('READER')")
+    @PreAuthorize("hasAnyRole('READER', 'LIBRARIAN', 'ADMIN')")
     public ResponseEntity<CreateReturnResponse> createReturnRequest(
             @Valid @RequestBody CreateReturnRequest request,
             CurrentUser currentUser) {

@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '—'
+  return new Date(dateStr).toLocaleDateString('vi-VN')
+}
+
 const ConfirmPickupModal = ({ borrow, onSubmit, onClose }) => {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -21,7 +26,7 @@ const ConfirmPickupModal = ({ borrow, onSubmit, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-white">Xác nhận nhận sách</h3>
+          <h3 className="text-lg font-bold text-white">Xác nhận giao sách</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -37,6 +42,14 @@ const ConfirmPickupModal = ({ borrow, onSubmit, onClose }) => {
           <p className="text-sm">
             <span className="text-white/40">Sách:</span>{' '}
             <span className="text-white font-medium">{borrow.bookTitle || borrow.bookId}</span>
+          </p>
+          <p className="text-sm">
+            <span className="text-white/40">Mã lấy sách:</span>{' '}
+            <span className="text-white font-medium font-mono">{borrow.pickupCode || borrow.id}</span>
+          </p>
+          <p className="text-sm">
+            <span className="text-white/40">Ngày lấy sách:</span>{' '}
+            <span className="text-white font-medium">{formatDate(borrow.borrowDate)}</span>
           </p>
           <p className="text-sm">
             <span className="text-white/40">Thời hạn mượn:</span>{' '}
@@ -64,7 +77,7 @@ const ConfirmPickupModal = ({ borrow, onSubmit, onClose }) => {
             onClick={handleSubmit}
             className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white font-semibold text-sm transition-all disabled:opacity-50"
           >
-            {submitting ? 'Đang xử lý...' : 'Xác nhận đã nhận sách'}
+            {submitting ? 'Đang xử lý...' : 'Xác nhận đã giao sách'}
           </button>
         </div>
       </div>

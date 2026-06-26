@@ -98,14 +98,14 @@ public class WalletService {
     }
 
     @Transactional
-    public void hold(UUID userId, BigDecimal amount, ReferenceType refType,
-                     UUID refId, String description) {
+        public void hold(UUID userId, BigDecimal amount, ReferenceType refType,
+                        UUID refId, String description) {
         Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(WalletNotFoundException::new);
 
         if (wallet.getAvailableBalance().compareTo(amount) < 0) {
-            throw new InsufficientBalanceException(
-                    "Số dư khả dụng không đủ. Cần: " + amount + ", có: " + wallet.getAvailableBalance());
+                throw new InsufficientBalanceException(
+                        "Số dư khả dụng không đủ. Cần: " + amount + ", có: " + wallet.getAvailableBalance());
         }
 
         BigDecimal balanceBefore = wallet.getBalance();
@@ -114,16 +114,20 @@ public class WalletService {
         wallet.setHeldAmount(wallet.getHeldAmount().add(amount));
         walletRepository.save(wallet);
 
-        createTransaction(wallet, amount, TransactionType.DEPOSIT_HOLD, refType, refId,
-                description, balanceBefore, wallet.getBalance(), heldBefore, wallet.getHeldAmount());
+        // Chỉ tạo transaction khi amount > 0, tránh vi phạm constraint DB
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+                createTransaction(wallet, amount, TransactionType.DEPOSIT_HOLD, refType, refId,
+                        description, balanceBefore, wallet.getBalance(), heldBefore, wallet.getHeldAmount());
+        }
 
         log.info("Wallet hold: userId={}, amount={}, newHeldAmount={}",
                 userId, amount, wallet.getHeldAmount());
-    }
+        }
 
+    
     @Transactional
-    public void releaseHold(UUID userId, BigDecimal amount, ReferenceType refType,
-                             UUID refId, String description) {
+        public void releaseHold(UUID userId, BigDecimal amount, ReferenceType refType,
+                                UUID refId, String description) {
         Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(WalletNotFoundException::new);
 
@@ -133,12 +137,15 @@ public class WalletService {
         wallet.setHeldAmount(wallet.getHeldAmount().subtract(amount));
         walletRepository.save(wallet);
 
-        createTransaction(wallet, amount, TransactionType.DEPOSIT_RELEASE, refType, refId,
-                description, balanceBefore, wallet.getBalance(), heldBefore, wallet.getHeldAmount());
+        // Chỉ tạo transaction khi amount > 0, tránh vi phạm constraint DB
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+                createTransaction(wallet, amount, TransactionType.DEPOSIT_RELEASE, refType, refId,
+                        description, balanceBefore, wallet.getBalance(), heldBefore, wallet.getHeldAmount());
+        }
 
         log.info("Wallet releaseHold: userId={}, amount={}, newHeldAmount={}",
                 userId, amount, wallet.getHeldAmount());
-    }
+        }
 
     @Transactional
     public void deductHeld(UUID userId, BigDecimal amount, TransactionType type,

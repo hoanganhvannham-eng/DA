@@ -586,4 +586,17 @@ public class BorrowService {
         }
         return sb.toString();
     }
+    @Transactional(readOnly = true)
+    public List<BorrowRecordResponse> getBorrowingBorrows() {
+        List<BorrowRecord> records = borrowRecordRepository.findByStatusOrderByCreatedAtAsc(BorrowStatus.BORROWING);
+        log.info("Found {} borrowing records", records.size());
+        return records.stream()
+                .map(r -> {
+                    BorrowRecordResponse resp = borrowMapper.toResponse(r);
+                    enrichWithNames(resp, r);
+                    resp.setMessage("Đang mượn");
+                    return resp;
+                })
+                .toList();
+    }
 }

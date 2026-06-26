@@ -96,3 +96,10 @@ export const confirmShipment = async (borrowId) => {
   const response = await apiClient.patch(url)
   return response.data
 }
+
+export const getActiveBorrows = async (params = {}) => {
+  const response = await apiClient.get(API_ENDPOINTS.BORROW.LIST, {
+    params: { status: 'BORROWING', ...params }
+  })
+  return response.data
+}

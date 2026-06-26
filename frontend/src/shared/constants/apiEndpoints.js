@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   },
   BORROW: {
     LIST: '/v1/borrows',
+    
     DETAIL: '/v1/borrows/:id',
     MY_HISTORY: '/v1/borrows/my-history',
     APPROVE: '/v1/borrows/:id/approve',

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { QRCodeCanvas } from 'qrcode.react'
 import { createBorrowRequest, getRentalRates, getDepositPolicies } from '../services/borrowService'
 import { getWallet } from '../../wallet/services/walletService'
 import { formatCurrency } from '../../../shared/utils/formatUtils'
+import TopUpModal from '../../wallet/components/TopUpModal'
 
 const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, customDepositRate, onClose, onSuccess }) => {
-  const navigate = useNavigate()
+  const [showTopUp, setShowTopUp] = useState(false)
   const [durationDays, setDurationDays] = useState(14)
   const [fulfillmentMethod, setFulfillmentMethod] = useState('AT_LIBRARY')
   const [shippingAddress, setShippingAddress] = useState('')
@@ -17,6 +18,15 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
   const [rentalRates, setRentalRates] = useState([])
   const [depositPolicies, setDepositPolicies] = useState([])
   const [wallet, setWallet] = useState(null)
+
+  const fetchWalletOnly = async () => {
+    try {
+      const walletData = await getWallet()
+      setWallet(walletData)
+    } catch {
+      // silent fail
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,9 +56,9 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
     if (customDepositRate !== null && customDepositRate !== undefined) {
       return Number(customDepositRate)
     }
-    if (!depositPolicies.length || !depositPolicyId) return 70
+    if (!depositPolicies.length || !depositPolicyId) return 20
     const policy = depositPolicies.find(p => p.id === depositPolicyId)
-    return policy ? Number(policy.depositRate) : 70
+    return policy ? Number(policy.depositRate) : 20
   }
 
   const matchingRate = findMatchingRate()
@@ -110,9 +120,31 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
               Vui lòng theo dõi trạng thái trong lịch sử mượn sách.
             </p>
             {result.pickupCode && (
-              <div className="bg-white/[0.05] rounded-xl p-3">
+              <div className="bg-white/[0.05] rounded-xl p-4 flex flex-col items-center gap-3">
                 <p className="text-xs text-white/40">Mã nhận sách:</p>
                 <p className="text-lg font-mono font-bold text-cyan-400">{result.pickupCode}</p>
+                <QRCodeCanvas
+                  id="borrow-result-qr-canvas"
+                  value={result.pickupCode}
+                  size={140}
+                  bgColor="#ffffff"
+                  fgColor="#0f172a"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const canvas = document.getElementById('borrow-result-qr-canvas')
+                    if (!canvas) return
+                    const url = canvas.toDataURL('image/png')
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `QR-${result.pickupCode}.png`
+                    a.click()
+                  }}
+                  className="px-3 py-1.5 text-xs rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors"
+                >
+                  Lưu ảnh mã QR
+                </button>
               </div>
             )}
             <button
@@ -208,16 +240,14 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                   {formatCurrency(availableBalance)}
                 </span>
               </div>
-              {!hasEnoughBalance && totalRequired > 0 && (
-                <p className="text-xs text-rose-300 mt-1">
-                  Tổng giá trị sách vượt quá khả năng bảo đảm của ví.{' '}
-                  <button
-                    onClick={() => { onClose(); navigate(`/my-wallet?returnUrl=${encodeURIComponent(`/books/${bookId}`)}`) }}
-                    className="underline text-cyan-400 hover:text-cyan-300"
-                  >
-                    Nạp thêm {formatCurrency(totalRequired - availableBalance)}
-                  </button>
-                </p>
+           {!hasEnoughBalance && totalRequired > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowTopUp(true)}
+                  className="mt-2 w-full py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-sm font-semibold hover:bg-cyan-500/20 transition-colors"
+                >
+                  Nạp thêm tiền
+                </button>
               )}
             </div>
           )}
@@ -308,6 +338,13 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
           </button>
         </form>
       </div>
+
+      {showTopUp && (
+        <TopUpModal
+          onClose={() => setShowTopUp(false)}
+          returnUrl={`/books/${bookId}?resumeBorrow=true`}
+        />
+      )}
     </div>
   )
 }

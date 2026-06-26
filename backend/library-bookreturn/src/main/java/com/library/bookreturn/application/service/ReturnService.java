@@ -115,15 +115,16 @@ public class ReturnService {
     private static final List<BorrowStatus> PENDING_CONFIRM_STATUSES = List.of(BorrowStatus.RETURN_PENDING, BorrowStatus.RETURN_RECEIVED);
 
     @Transactional
-    public CreateReturnResponse createReturnRequest(UUID readerId, CreateReturnRequest request) {
+    public CreateReturnResponse createReturnRequest(UUID requesterId, CreateReturnRequest request) {
         BorrowRecord record = borrowRecordRepository.findByIdWithLock(request.getBorrowRecordId())
                 .orElseThrow(() -> {
-                    log.warn("Create return failed: borrow not found id={}, readerId={}", request.getBorrowRecordId(), readerId);
+                    log.warn("Create return failed: borrow not found id={}, requesterId={}", request.getBorrowRecordId(), requesterId);
                     return new ReturnBorrowNotFoundException();
                 });
 
-        if (!record.getReaderId().equals(readerId)) {
-            log.warn("Create return failed: borrow id={} not owned by readerId={}", request.getBorrowRecordId(), readerId);
+        boolean isLibrarianOrAdmin = request.isStaffOverride();
+        if (!isLibrarianOrAdmin && !record.getReaderId().equals(requesterId)) {
+            log.warn("Create return failed: borrow id={} not owned by readerId={}", request.getBorrowRecordId(), requesterId);
             throw new ReturnBorrowNotFoundException();
         }
 
@@ -158,13 +159,13 @@ public class ReturnService {
             message = "Tạo yêu cầu trả sách thành công. Vui lòng mang sách đến thư viện";
         }
 
+        UUID actualReaderId = record.getReaderId();
         BorrowRecord saved = borrowRecordRepository.save(record);
-        log.info("Return request created ({}): id={}, readerId={}, bookId={}",
-                returnMethod, saved.getId(), readerId, saved.getBookId());
+        log.info("Return request created ({}): id={}, readerId={},",
+                returnMethod, saved.getId(), actualReaderId, saved.getBookId());
 
         eventPublisher.publishEvent(new ReturnCreatedEvent(
-                saved.getId(), readerId, saved.getBookId(), returnMethod));
-
+                saved.getId(), actualReaderId, saved.getBookId(), returnMethod));
         return returnMapper.toCreateResponse(saved, message);
     }
 

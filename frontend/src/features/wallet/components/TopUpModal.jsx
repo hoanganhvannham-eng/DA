@@ -19,7 +19,7 @@ export default function TopUpModal({ onClose, onSuccess, returnUrl }) {
     setError(null)
     try {
       const redirectUrl = returnUrl
-        ? `${window.location.origin}/my-wallet?returnUrl=${encodeURIComponent(returnUrl)}`
+        ? `${window.location.origin}${returnUrl}`
         : `${window.location.origin}/my-wallet`
       const data = await createPayment(numAmount, redirectUrl)
       if (data.gatewayUrl) {
