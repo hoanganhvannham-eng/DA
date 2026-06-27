@@ -147,7 +147,9 @@ const PendingApprovalTab = ({ refreshTrigger, onRefresh }) => {
                   return flags.length > 0 ? (
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-xs text-white/30">Rủi ro:</span>
-                      {flags.map(flag => getRiskFlagBadge(flag))}
+                      {Array.from(new Set(flags)).map(flag => (
+                        <React.Fragment key={flag}>{getRiskFlagBadge(flag)}</React.Fragment>
+                      ))}
                     </div>
                   ) : null
                 })()}

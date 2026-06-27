@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import HeroSection from './sections/HeroSection'
 import BookCatalogSection from './sections/BookCatalogSection'
 import FeaturesSection from './sections/FeaturesSection'
-import MoodSection from './sections/MoodSection'
+// import MoodSection from './sections/MoodSection'
 import StatsSection from './sections/StatsSection'
 import HowItWorksSection from './sections/HowItWorksSection'
 import AboutSection from './sections/AboutSection'
@@ -76,7 +76,7 @@ export default function LandingPage() {
         <StatsSection />
         <FeaturesSection />
         <AboutSection />
-        <MoodSection />
+        {/* <MoodSection /> */}
         <HowItWorksSection />
         <FaqSection />
         <ContactSection />

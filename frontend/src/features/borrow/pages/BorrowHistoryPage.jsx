@@ -168,7 +168,7 @@ function renderStatusFields(record) {
             fields.push(
               <div key="riskFlags" className="sm:col-span-3">
                 <span className="text-white/40">Rủi ro: </span>
-                {flags.map(f => (
+                {Array.from(new Set(flags)).map(f => (
                   <span key={f} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-500/15 backdrop-blur-sm text-red-300 border border-red-500/30 mr-1">
                     {RISK_FLAG_LABELS[f] || f}
                   </span>
@@ -397,7 +397,6 @@ function renderStatusFields(record) {
 
   return fields
 }
-
 function renderActionButtons(record, onReturnClick, onConfirmDelivery, onReportIssue, onCancelClick) {
   const btns = []
   const status = record.status
@@ -406,7 +405,7 @@ function renderActionButtons(record, onReturnClick, onConfirmDelivery, onReportI
     case 'APPROVED_WAITING_PAYMENT':
     case 'AWAITING_PICKUP':
       btns.push(
-        <button key="cancel" onClick={() => onCancelClick(record)} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/60 border border-white/10 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <button key="cancel" onClick={(e) => { e.stopPropagation(); onCancelClick(record) }} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/60 border border-white/10 hover:text-white hover:bg-white/10 transition-all duration-200">
           Hủy đơn
         </button>
       )
@@ -415,35 +414,35 @@ function renderActionButtons(record, onReturnClick, onConfirmDelivery, onReportI
     case 'RESERVED':
     case 'AWAITING_SHIPMENT':
       btns.push(
-        <button key="cancel" onClick={() => onCancelClick(record)} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/60 border border-white/10 hover:text-white hover:bg-white/10 transition-all duration-200">
+        <button key="cancel" onClick={(e) => { e.stopPropagation(); onCancelClick(record) }} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/60 border border-white/10 hover:text-white hover:bg-white/10 transition-all duration-200">
           Hủy đơn
         </button>
       )
       break
     case 'BORROWING':
       btns.push(
-        <button key="extend" disabled className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/20 cursor-not-allowed transition-all duration-200">
+        <button key="extend" disabled onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/20 cursor-not-allowed transition-all duration-200">
           Gia hạn
         </button>,
-        <button key="return" onClick={() => onReturnClick(record)} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-cyan-500/90 text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all duration-200">
+        <button key="return" onClick={(e) => { e.stopPropagation(); onReturnClick(record) }} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-cyan-500/90 text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all duration-200">
           Xin trả sách
         </button>
       )
       break
     case 'OVERDUE':
       btns.push(
-        <button key="return" onClick={() => onReturnClick(record)} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-cyan-500/90 text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all duration-200">
+        <button key="return" onClick={(e) => { e.stopPropagation(); onReturnClick(record) }} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-cyan-500/90 text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all duration-200">
           Xin trả sách
         </button>
       )
       break
     case 'DELIVERED_PENDING':
       btns.push(
-        <button key="confirm" onClick={() => onConfirmDelivery(record)}
+        <button key="confirm" onClick={(e) => { e.stopPropagation(); onConfirmDelivery(record) }}
                 className="px-3 py-1.5 text-xs font-medium rounded-xl bg-cyan-500/90 text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-400 transition-all duration-200">
           Đã nhận sách
         </button>,
-        <button key="issue" onClick={() => onReportIssue(record)}
+        <button key="issue" onClick={(e) => { e.stopPropagation(); onReportIssue(record) }}
                 className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/60 border border-white/10 hover:text-white hover:bg-white/10 transition-all duration-200">
           Tôi chưa nhận
         </button>
@@ -452,7 +451,7 @@ function renderActionButtons(record, onReturnClick, onConfirmDelivery, onReportI
     case 'REJECTED':
       if (record.rejectionReason) {
         btns.push(
-          <button key="viewReason" disabled className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/20 cursor-not-allowed transition-all duration-200">
+          <button key="viewReason" disabled onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/5 text-white/20 cursor-not-allowed transition-all duration-200">
             Xem lý do
           </button>
         )

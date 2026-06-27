@@ -61,7 +61,7 @@ const BookListPage = () => {
   const isStaff = user?.role === 'LIBRARIAN' || user?.role === 'ADMIN'
 
   useEffect(() => {
-    getDepositPolicies().then(d => setDepositPolicies(Array.isArray(d) ? d : [])).catch(() => {})
+    getDepositPolicies().then(d => setDepositPolicies(Array.isArray(d) ? d : [])).catch(() => { })
   }, [])
 
   useEffect(() => {
@@ -198,6 +198,18 @@ const BookListPage = () => {
     } finally { setDeleting(false) }
   }
 
+  const formatVND = (value) => {
+    const digits = String(value).replace(/\D/g, '')
+    if (!digits) return ''
+    return Number(digits).toLocaleString('vi-VN')
+  }
+
+  const handlePriceChange = (e) => {
+    const digits = e.target.value.replace(/\D/g, '')
+    setFormData(p => ({ ...p, replacementPrice: digits === '' ? '' : Number(digits) }))
+    setFormErrors(p => ({ ...p, replacementPrice: '' }))
+  }
+
   const field = (name, label, type = 'text', extra = {}) => (
     <div>
       <label className="block text-xs font-semibold text-slate-400 mb-1">{label}</label>
@@ -206,7 +218,7 @@ const BookListPage = () => {
           id={`form-${name}`}
           rows={3}
           value={formData[name]}
-          onChange={e => { setFormData(p => ({...p, [name]: e.target.value})); setFormErrors(p => ({...p, [name]: ''})) }}
+          onChange={e => { setFormData(p => ({ ...p, [name]: e.target.value })); setFormErrors(p => ({ ...p, [name]: '' })) }}
           className={`w-full px-3 py-2 rounded-2xl bg-white/[0.05] border text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 resize-none ${formErrors[name] ? 'border-rose-500/50' : 'border-white/10'}`}
           {...extra}
         />
@@ -215,7 +227,7 @@ const BookListPage = () => {
           id={`form-${name}`}
           type={type}
           value={formData[name]}
-          onChange={e => { setFormData(p => ({...p, [name]: e.target.value})); setFormErrors(p => ({...p, [name]: ''})) }}
+          onChange={e => { setFormData(p => ({ ...p, [name]: e.target.value })); setFormErrors(p => ({ ...p, [name]: '' })) }}
           className={`w-full px-3 py-2 rounded-2xl bg-white/[0.05] border text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${formErrors[name] ? 'border-rose-500/50' : 'border-white/10'}`}
           {...extra}
         />
@@ -321,7 +333,7 @@ const BookListPage = () => {
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1">Thể loại *</label>
                   <select id="form-categoryId" value={formData.categoryId}
-                    onChange={e => { setFormData(p => ({...p, categoryId: e.target.value})); setFormErrors(p => ({...p, categoryId: ''})) }}
+                    onChange={e => { setFormData(p => ({ ...p, categoryId: e.target.value })); setFormErrors(p => ({ ...p, categoryId: '' })) }}
                     className={`w-full px-3 py-2 rounded-2xl bg-white/[0.05] border text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${formErrors.categoryId ? 'border-rose-500/50' : 'border-white/10'}`}>
                     <option className="bg-slate-900" value="">-- Chọn thể loại --</option>
                     {categories.map(c => <option className="bg-slate-900" key={c.id} value={c.id}>{c.name}</option>)}
@@ -329,11 +341,24 @@ const BookListPage = () => {
                   {formErrors.categoryId && <p className="text-rose-400 text-xs mt-1">{formErrors.categoryId}</p>}
                 </div>
                 {field('totalQuantity', 'Số lượng *', 'number', { min: 1 })}
-                {field('replacementPrice', 'Giá trị sách (VNĐ) *', 'number', { min: 0, step: 1000 })}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">Giá trị sách (VNĐ) *</label>
+                  <input
+                    id="form-replacementPrice"
+                    type="text"
+                    inputMode="numeric"
+                    value={formatVND(formData.replacementPrice)}
+                    onChange={handlePriceChange}
+                    placeholder="VD: 200.000"
+                    className={`w-full px-3 py-2 rounded-2xl bg-white/[0.05] border text-white text-sm placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${formErrors.replacementPrice ? 'border-rose-500/50' : 'border-white/10'}`}
+                  />
+                  {formErrors.replacementPrice && <p className="text-rose-400 text-xs mt-1">{formErrors.replacementPrice}</p>}
+                </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1">Chính sách cọc *</label>
                   <select id="form-depositPolicyId" value={formData.depositPolicyId}
-                    onChange={e => { setFormData(p => ({...p, depositPolicyId: e.target.value})); setFormErrors(p => ({...p, depositPolicyId: ''})) }}
+                    onChange={e => { setFormData(p => ({ ...p, depositPolicyId: e.target.value })); setFormErrors(p => ({ ...p, depositPolicyId: '' })) }}
                     className={`w-full px-3 py-2 rounded-2xl bg-white/[0.05] border text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-300 ${formErrors.depositPolicyId ? 'border-rose-500/50' : 'border-white/10'}`}>
                     <option className="bg-slate-900" value="">-- Chọn chính sách --</option>
                     {depositPolicies.map(p => (
