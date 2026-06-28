@@ -74,7 +74,7 @@ const BookDetailPage = () => {
         setAvailableMoods(data.availableMoods || [])
         setSelectedMoodIds(data.currentMoodIds || [])
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => { if (!cancelled) setMoodsLoading(false) })
     return () => { cancelled = true }
   }, [bookId, isLoggedIn, user?.role])
@@ -161,32 +161,32 @@ const BookDetailPage = () => {
         initial="hidden"
         animate="visible"
       >
-        
+
         {/* Navigation Breadcrumb */}
         <motion.div variants={itemVariants}>
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          id="btn-back-to-list"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
-        >
-          <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-          </svg>
-          Quay lại
-        </button>
+          <button
+            type="button"
+            onClick={() => navigate('/books')}
+            id="btn-back-to-list"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
+          >
+            <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+            Quay lại
+          </button>
         </motion.div>
 
         {/* Two Column Detail Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
+
           {/* Left Column - Book Cover mockup */}
           <motion.div className="md:col-span-1 space-y-4" variants={itemVariants}>
             <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/5 p-6 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group">
-              
+
               {/* Book Cover */}
               <div className="relative w-44 h-64 my-4 rounded-r-xl shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02] group-hover:rotate-[1deg] flex flex-col justify-between p-4 overflow-hidden"
-                   style={{ perspective: '1000px' }}>
+                style={{ perspective: '1000px' }}>
                 <div className="absolute top-0 left-0 w-3 h-full bg-gradient-to-r from-black/40 to-transparent z-10" />
                 <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
@@ -205,7 +205,7 @@ const BookDetailPage = () => {
                       {book.title}
                     </h3>
                   </div>
-                  
+
                   <div>
                     <div className="w-6 h-0.5 bg-indigo-300/60 my-2" />
                     <p className="text-indigo-200 text-xs font-medium truncate drop-shadow-md">
@@ -239,17 +239,16 @@ const BookDetailPage = () => {
           {/* Right Column - Book info details & operations */}
           <motion.div className="md:col-span-2 space-y-6" variants={itemVariants}>
             <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-white/5 p-6 md:p-8 space-y-6 shadow-2xl">
-              
+
               {/* Title & Author */}
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight"
-                      style={{ textShadow: '0 0 40px rgba(34,211,238,0.3)' }}>
+                    style={{ textShadow: '0 0 40px rgba(34,211,238,0.3)' }}>
                     {book.title}
                   </h1>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                    isAvailable ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/30' : 'bg-red-950/80 text-red-400 border border-red-800/30'
-                  }`}>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${isAvailable ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/30' : 'bg-red-950/80 text-red-400 border border-red-800/30'
+                    }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
                     {isAvailable ? 'Có sẵn' : 'Hết sách'}
                   </span>
@@ -267,7 +266,7 @@ const BookDetailPage = () => {
 
               {/* Inventory details */}
               <motion.div className="grid grid-cols-2 sm:grid-cols-3 gap-4" variants={itemVariants}>
-                
+
                 <div className="bg-slate-900/60 backdrop-blur-xl border border-white/5 p-4 rounded-2xl text-center">
                   <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Tổng số lượng</p>
                   <p className="text-2xl font-black text-slate-100">{book.availableQuantity + book.borrowedQuantity}</p>
@@ -287,7 +286,7 @@ const BookDetailPage = () => {
 
               {/* Dynamic Action / Information Area based on Role */}
               <motion.div variants={itemVariants} className="border-t border-white/5 pt-6 mt-4">
-                
+
                 {/* 1. GUEST VIEW */}
                 {!isLoggedIn && (
                   <div className="bg-slate-900/60 backdrop-blur-xl rounded-[2rem] border border-cyan-500/10 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -357,11 +356,10 @@ const BookDetailPage = () => {
                               return (
                                 <label
                                   key={mood.id}
-                                  className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-all text-sm ${
-                                    checked
+                                  className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-all text-sm ${checked
                                       ? 'bg-indigo-900/40 border-indigo-500 text-indigo-200'
                                       : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500'
-                                  }`}
+                                    }`}
                                 >
                                   <input
                                     type="checkbox"
@@ -375,9 +373,8 @@ const BookDetailPage = () => {
                                     }}
                                     className="sr-only"
                                   />
-                                  <span className={`w-3 h-3 rounded border flex items-center justify-center transition-all ${
-                                    checked ? 'bg-indigo-500 border-indigo-500' : 'border-slate-500'
-                                  }`}>
+                                  <span className={`w-3 h-3 rounded border flex items-center justify-center transition-all ${checked ? 'bg-indigo-500 border-indigo-500' : 'border-slate-500'
+                                    }`}>
                                     {checked && (
                                       <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -411,9 +408,8 @@ const BookDetailPage = () => {
                               {moodsSaving ? 'Đang lưu...' : 'Lưu mood'}
                             </button>
                             {moodsMessage && (
-                              <span className={`text-xs font-medium ${
-                                moodsMessage.includes('thành công') ? 'text-emerald-400' : 'text-red-400'
-                              }`}>
+                              <span className={`text-xs font-medium ${moodsMessage.includes('thành công') ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
                                 {moodsMessage}
                               </span>
                             )}
@@ -426,7 +422,7 @@ const BookDetailPage = () => {
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
                       <span>📋</span> Lịch sử mượn sách
                     </h3>
-                    
+
                     {(!book.borrowHistory || book.borrowHistory.length === 0) ? (
                       <div className="bg-slate-900/30 rounded-[2rem] p-8 text-center text-slate-500">
                         <p className="text-2xl mb-2">📖</p>

@@ -49,26 +49,25 @@ export default function WalletPage() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         <Link
-          to="/"
+          to={returnUrl || '/'}
           className="inline-flex items-center gap-2 text-white/40 hover:text-cyan-400 text-sm transition-all duration-200 group mb-4"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Quay lại trang chủ
+          {returnUrl ? 'Quay lại' : 'Quay lại trang chủ'}
         </Link>
 
         {paymentStatus && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-4 p-4 rounded-2xl border text-sm ${
-              paymentStatus === 'success'
+            className={`mb-4 p-4 rounded-2xl border text-sm ${paymentStatus === 'success'
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                 : paymentStatus === 'failed'
-                ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-            }`}
+                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              }`}
           >
             {paymentStatus === 'success' && (
               <div className="flex items-center justify-between">
@@ -185,11 +184,10 @@ export default function WalletPage() {
                     <button
                       key={i}
                       onClick={() => setPage(i)}
-                      className={`px-3 py-1.5 text-sm rounded-xl border transition-all ${
-                        page === i
+                      className={`px-3 py-1.5 text-sm rounded-xl border transition-all ${page === i
                           ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
                           : 'bg-white/5 text-white/60 border-white/10 hover:text-white'
-                      }`}
+                        }`}
                     >
                       {i + 1}
                     </button>
