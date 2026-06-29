@@ -75,8 +75,8 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
     setError(null)
     setAddressError('')
 
-    if (durationDays > 60) {
-      setError('Thời hạn mượn tối đa 60 ngày')
+    if (durationDays > 30) {
+      setError('Thời hạn mượn tối đa 30 ngày')
       return
     }
 
@@ -181,12 +181,12 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
             <input
               type="number"
               min={1}
-              max={60}
+              max={30}
               value={durationDays}
               onChange={e => setDurationDays(parseInt(e.target.value) || 14)}
               className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-cyan-500/20"
             />
-            <p className="text-xs text-white/30 mt-1">Tối thiểu 1, tối đa 60 ngày.</p>
+            <p className="text-xs text-white/30 mt-1">Tối thiểu 1, tối đa 30 ngày.</p>
           </div>
 
           {matchingRate && (
@@ -240,7 +240,7 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                   {formatCurrency(availableBalance)}
                 </span>
               </div>
-           {!hasEnoughBalance && totalRequired > 0 && (
+              {!hasEnoughBalance && totalRequired > 0 && (
                 <button
                   type="button"
                   onClick={() => setShowTopUp(true)}
@@ -255,11 +255,10 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5">Phương thức nhận sách</label>
             <div className="space-y-2">
-              <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                fulfillmentMethod === 'AT_LIBRARY'
-                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
-                  : 'border-white/10 bg-white/[0.03]'
-              }`}>
+              <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${fulfillmentMethod === 'AT_LIBRARY'
+                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
+                : 'border-white/10 bg-white/[0.03]'
+                }`}>
                 <input
                   type="radio"
                   name="fulfillmentMethod"
@@ -268,9 +267,8 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                   onChange={() => setFulfillmentMethod('AT_LIBRARY')}
                   className="sr-only"
                 />
-                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                  fulfillmentMethod === 'AT_LIBRARY' ? 'border-cyan-500/50' : 'border-white/20'
-                }`}>
+                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${fulfillmentMethod === 'AT_LIBRARY' ? 'border-cyan-500/50' : 'border-white/20'
+                  }`}>
                   {fulfillmentMethod === 'AT_LIBRARY' && <span className="w-2 h-2 rounded-full bg-cyan-500" />}
                 </span>
                 <div>
@@ -279,11 +277,10 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                 </div>
               </label>
 
-              <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                fulfillmentMethod === 'DELIVERY'
-                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
-                  : 'border-white/10 bg-white/[0.03]'
-              }`}>
+              <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${fulfillmentMethod === 'DELIVERY'
+                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
+                : 'border-white/10 bg-white/[0.03]'
+                }`}>
                 <input
                   type="radio"
                   name="fulfillmentMethod"
@@ -292,9 +289,8 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                   onChange={() => setFulfillmentMethod('DELIVERY')}
                   className="sr-only"
                 />
-                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                  fulfillmentMethod === 'DELIVERY' ? 'border-cyan-500/50' : 'border-white/20'
-                }`}>
+                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${fulfillmentMethod === 'DELIVERY' ? 'border-cyan-500/50' : 'border-white/20'
+                  }`}>
                   {fulfillmentMethod === 'DELIVERY' && <span className="w-2 h-2 rounded-full bg-cyan-500" />}
                 </span>
                 <div>
@@ -314,9 +310,8 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
                 placeholder="Nhập địa chỉ giao hàng..."
                 rows={3}
                 maxLength={255}
-                className={`w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none placeholder-white/30 ${
-                  addressError ? 'border-rose-500/50' : 'border-white/10'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none placeholder-white/30 ${addressError ? 'border-rose-500/50' : 'border-white/10'
+                  }`}
               />
               {addressError && <p className="text-xs text-red-400 mt-1">{addressError}</p>}
               <p className="text-xs text-slate-500 mt-1">{shippingAddress.length}/255</p>
