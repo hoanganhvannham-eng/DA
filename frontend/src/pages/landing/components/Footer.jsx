@@ -1,11 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../../features/auth/hooks/useAuth'
 
 export default function Footer() {
+  const { isLoggedIn } = useAuth()
+
   return (
     <footer className="border-t border-white/5 bg-slate-950/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className={`grid grid-cols-1 gap-10 ${isLoggedIn ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
+
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
@@ -49,18 +53,21 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* CTA */}
-          <div>
-            <h4 className="text-sm font-semibold text-slate-300 mb-4">Bắt đầu ngay</h4>
-            <p className="text-slate-500 text-sm mb-4">Tạo tài khoản miễn phí và khám phá kho sách phong phú.</p>
-            <Link to="/register"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-cyan-500/25">
-              Đăng ký miễn phí
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-          </div>
+          {/* CTA — chỉ hiện khi chưa đăng nhập */}
+          {!isLoggedIn && (
+            <div>
+              <h4 className="text-sm font-semibold text-slate-300 mb-4">Bắt đầu ngay</h4>
+              <p className="text-slate-500 text-sm mb-4">Tạo tài khoản miễn phí và khám phá kho sách phong phú.</p>
+              <Link to="/register"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-cyan-500/25">
+                Đăng ký miễn phí
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+            </div>
+          )}
+
         </div>
 
         <div className="mt-10 pt-6 border-t border-slate-800/50 text-center text-slate-600 text-sm">

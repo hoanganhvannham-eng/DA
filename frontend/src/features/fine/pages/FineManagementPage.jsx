@@ -222,6 +222,15 @@ const FineManagementPage = () => {
     const d = new Date(dateStr)
     return d.toLocaleDateString('vi-VN')
   }
+  const formatNumberInput = (value) => {
+    if (!value) return ''
+    const num = String(value).replace(/\D/g, '')
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  }
+
+  const parseNumberInput = (value) => {
+    return value.replace(/\./g, '')
+  }
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)
@@ -297,35 +306,29 @@ const FineManagementPage = () => {
               />
               <input
                 id="input-new-fine-amount"
-                type="number"
-                value={newAmount}
-                onChange={(e) => { setNewAmount(e.target.value); setAddError('') }}
+                type="text"
+                value={formatNumberInput(newAmount)}
+                onChange={(e) => { setNewAmount(parseNumberInput(e.target.value)); setAddError('') }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); if (e.key === 'Escape') handleCancelAdd() }}
                 placeholder="Nhập số tiền phạt"
-                min="0"
-                step="0.01"
                 className={`px-4 py-2.5 rounded-2xl bg-slate-900/60 backdrop-blur border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${addError ? 'border-red-500/60' : 'border-white/10'}`}
               />
               <input
                 id="input-new-fine-amount-per-day"
-                type="number"
-                value={newAmountPerDay}
-                onChange={(e) => { setNewAmountPerDay(e.target.value); setAddError('') }}
+                type="text"
+                value={formatNumberInput(newAmountPerDay)}
+                onChange={(e) => { setNewAmountPerDay(parseNumberInput(e.target.value)); setAddError('') }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); if (e.key === 'Escape') handleCancelAdd() }}
                 placeholder="Phạt mỗi ngày trễ (VNĐ/ngày) - chỉ cho OVERDUE"
-                min="0"
-                step="0.01"
                 className={`px-4 py-2.5 rounded-2xl bg-slate-900/60 backdrop-blur border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${addError ? 'border-red-500/60' : 'border-white/10'}`}
               />
               <input
                 id="input-new-fine-max-amount"
-                type="number"
-                value={newMaxAmount}
-                onChange={(e) => { setNewMaxAmount(e.target.value); setAddError('') }}
+                type="text"
+                value={formatNumberInput(newMaxAmount)}
+                onChange={(e) => { setNewMaxAmount(parseNumberInput(e.target.value)); setAddError('') }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); if (e.key === 'Escape') handleCancelAdd() }}
                 placeholder="Giới hạn tối đa (VNĐ) - tùy chọn"
-                min="0"
-                step="0.01"
                 className={`px-4 py-2.5 rounded-2xl bg-slate-900/60 backdrop-blur border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${addError ? 'border-red-500/60' : 'border-white/10'}`}
               />
               <input
@@ -413,11 +416,10 @@ const FineManagementPage = () => {
                 {fineLevels.map((fine, index) => (
                   <tr
                     key={fine.id}
-                    className={`transition-colors duration-150 ${
-                      editingId === fine.id
-                        ? 'bg-cyan-950/20 border-l-2 border-cyan-500'
-                        : 'hover:bg-white/[0.04]'
-                    }`}
+                    className={`transition-colors duration-150 ${editingId === fine.id
+                      ? 'bg-cyan-950/20 border-l-2 border-cyan-500'
+                      : 'hover:bg-white/[0.04]'
+                      }`}
                   >
                     <td className="px-4 py-3 text-center text-white/30 font-mono text-xs">
                       {index + 1}
@@ -466,13 +468,12 @@ const FineManagementPage = () => {
                           <option value="LOST" className="bg-slate-900">Mất sách</option>
                         </select>
                       ) : (
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                          fine.fineType === 'ALL' ? 'bg-slate-700/40 text-slate-400' :
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${fine.fineType === 'ALL' ? 'bg-slate-700/40 text-slate-400' :
                           fine.fineType === 'OVERDUE' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
-                          fine.fineType === 'DAMAGED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
-                          fine.fineType === 'LOST' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
-                          'bg-slate-700/40 text-slate-400'
-                        }`}>
+                            fine.fineType === 'DAMAGED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30' :
+                              fine.fineType === 'LOST' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
+                                'bg-slate-700/40 text-slate-400'
+                          }`}>
                           {{
                             ALL: 'Tất cả',
                             OVERDUE: 'Trả muộn',
@@ -487,12 +488,10 @@ const FineManagementPage = () => {
                       {editingId === fine.id ? (
                         <input
                           id={`input-edit-amount-${fine.id}`}
-                          type="number"
-                          value={editingAmount}
-                          onChange={(e) => { setEditingAmount(e.target.value); setEditError('') }}
+                          type="text"
+                          value={formatNumberInput(editingAmount)}
+                          onChange={(e) => { setEditingAmount(parseNumberInput(e.target.value)); setEditError('') }}
                           onKeyDown={(e) => handleEditKeyDown(e, fine.id)}
-                          min="0"
-                          step="0.01"
                           className={`w-full px-3 py-2 rounded-xl bg-slate-900/60 backdrop-blur border text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${editError ? 'border-red-500' : 'border-cyan-500/40'}`}
                         />
                       ) : (
@@ -504,12 +503,10 @@ const FineManagementPage = () => {
                       {editingId === fine.id ? (
                         <input
                           id={`input-edit-amount-per-day-${fine.id}`}
-                          type="number"
-                          value={editingAmountPerDay}
-                          onChange={(e) => { setEditingAmountPerDay(e.target.value); setEditError('') }}
+                          type="text"
+                          value={formatNumberInput(editingAmountPerDay)}
+                          onChange={(e) => { setEditingAmountPerDay(parseNumberInput(e.target.value)); setEditError('') }}
                           onKeyDown={(e) => handleEditKeyDown(e, fine.id)}
-                          min="0"
-                          step="0.01"
                           placeholder="VNĐ/ngày"
                           className={`w-full px-3 py-2 rounded-xl bg-slate-900/60 backdrop-blur border text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${editError ? 'border-red-500' : 'border-cyan-500/40'}`}
                         />
@@ -524,15 +521,13 @@ const FineManagementPage = () => {
                       {editingId === fine.id ? (
                         <input
                           id={`input-edit-max-amount-${fine.id}`}
-                          type="number"
-                          value={editingMaxAmount}
-                          onChange={(e) => { setEditingMaxAmount(e.target.value); setEditError('') }}
+                          type="text"
+                          value={formatNumberInput(editingMaxAmount)}
+                          onChange={(e) => { setEditingMaxAmount(parseNumberInput(e.target.value)); setEditError('') }}
                           onKeyDown={(e) => handleEditKeyDown(e, fine.id)}
-                          min="0"
-                          step="0.01"
                           placeholder="VNĐ"
                           className={`w-full px-3 py-2 rounded-xl bg-slate-900/60 backdrop-blur border text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all ${editError ? 'border-red-500' : 'border-cyan-500/40'}`}
-                        />
+                        /> 
                       ) : (
                         <span className="text-white/60 font-mono text-xs">
                           {fine.maxAmount ? formatCurrency(fine.maxAmount) : '—'}

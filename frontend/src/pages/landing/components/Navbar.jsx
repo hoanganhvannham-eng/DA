@@ -233,13 +233,13 @@ export default function Navbar() {
         Quản lý mượn trả
       </Link>
 
-      {/* Báo cáo chi tiết — chỉ ADMIN */}
+      {/* Dashboard — chỉ ADMIN */}
       {user?.role === 'ADMIN' && (
         <Link
-          to="/reports/detailed"
+          to="/dashboard"
           className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-cyan-400 rounded-lg hover:bg-white/5 transition-all duration-200"
         >
-          Báo cáo chi tiết
+          Dashboard
         </Link>
       )}
     </nav>
@@ -356,13 +356,13 @@ export default function Navbar() {
 
                       {/* ADMIN only */}
                       {user.role === 'ADMIN' && (<>
-                        <Link to="/dashboard" onClick={() => setDropdownOpen(false)}
+                        {/* <Link to="/dashboard" onClick={() => setDropdownOpen(false)}
                           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-all">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6Zm0 9.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6Zm0 9.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
                           </svg>
                           Dashboard
-                        </Link>
+                        </Link> */}
                         <Link to="/fine-levels" onClick={() => setDropdownOpen(false)}
                           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-all">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
