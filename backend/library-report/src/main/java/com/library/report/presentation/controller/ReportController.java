@@ -39,14 +39,14 @@ public class ReportController {
     private final ReportExportService reportExportService;
 
     @GetMapping("/dashboard")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DashboardDTO> getDashboardOverview() {
         DashboardDTO dashboard = reportService.getDashboardOverview();
         return ResponseEntity.ok(dashboard);
     }
 
     @GetMapping("/{reportType}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DetailedReportDTO> getDetailedReport(
             @PathVariable ReportType reportType,
             @RequestParam(required = false) TimeRange timeRange) {
@@ -55,7 +55,7 @@ public class ReportController {
     }
 
     @PostMapping("/export")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExportRequestDTO> requestExport(
             @Valid @RequestBody ExportCSVRequest request,
             Authentication authentication) {
@@ -66,14 +66,14 @@ public class ReportController {
     }
 
     @GetMapping("/export/{exportId}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExportStatusDTO> getExportStatus(@PathVariable UUID exportId) {
         ExportStatusDTO status = reportService.getExportStatus(exportId);
         return ResponseEntity.ok(status);
     }
 
     @GetMapping("/export/{exportId}/download")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Resource> downloadExport(@PathVariable UUID exportId) {
         InputStream inputStream = reportExportService.downloadExport(exportId);
         String filename = "report_" + LocalDate.now() + ".csv";
@@ -86,7 +86,7 @@ public class ReportController {
     }
 
     @PostMapping("/export/{exportId}/retry")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExportRequestDTO> retryExport(@PathVariable UUID exportId) {
         ExportRequestDTO result = reportService.retryExport(exportId);
         return ResponseEntity.ok(result);

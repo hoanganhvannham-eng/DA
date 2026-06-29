@@ -69,7 +69,7 @@ export default function Footer() {
           )}
 
         </div>
-
+        
         <div className="mt-10 pt-6 border-t border-slate-800/50 text-center text-slate-600 text-sm">
           © 2026 LibraryMS. Hệ thống quản lý thư viện.
         </div>
