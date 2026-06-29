@@ -233,13 +233,15 @@ export default function Navbar() {
         Quản lý mượn trả
       </Link>
 
-      {/* Báo cáo chi tiết */}
-      <Link
-        to="/reports/detailed"
-        className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-cyan-400 rounded-lg hover:bg-white/5 transition-all duration-200"
-      >
-        Báo cáo chi tiết
-      </Link>
+      {/* Báo cáo chi tiết — chỉ ADMIN */}
+      {user?.role === 'ADMIN' && (
+        <Link
+          to="/reports/detailed"
+          className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-cyan-400 rounded-lg hover:bg-white/5 transition-all duration-200"
+        >
+          Báo cáo chi tiết
+        </Link>
+      )}
     </nav>
   )
 
