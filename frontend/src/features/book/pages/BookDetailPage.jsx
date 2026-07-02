@@ -166,7 +166,7 @@ const BookDetailPage = () => {
         <motion.div variants={itemVariants}>
           <button
             type="button"
-            onClick={() => navigate('/books')}
+            onClick={() => navigate('/')}
             id="btn-back-to-list"
             className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
           >

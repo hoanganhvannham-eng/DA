@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../features/auth/hooks/useAuth'
-
+// 9
 export default function Footer() {
   const { isLoggedIn } = useAuth()
 

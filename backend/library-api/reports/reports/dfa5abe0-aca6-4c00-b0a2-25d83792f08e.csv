@@ -1,0 +1,18 @@
+﻿book_id,title,author,isbn,category,total_quantity,available_quantity,borrowed_quantity,damaged_count,lost_count
+20000000-0000-0000-0000-000000000001,To Kill a Mockingbird,Harper Lee,9780061120084,Fiction,5,5,0,0,0
+20000000-0000-0000-0000-000000000002,1984,George Orwell,9780451524935,Fiction,3,1,0,0,0
+20000000-0000-0000-0000-000000000003,The Great Gatsby,F. Scott Fitzgerald,9780743273565,Fiction,4,4,0,0,0
+20000000-0000-0000-0000-000000000004,Clean Code,Robert C. Martin,9780132350884,Technology,5,4,1,0,0
+20000000-0000-0000-0000-000000000005,The Pragmatic Programmer,"David Thomas, Andrew Hunt",9780201616224,Technology,3,3,0,0,0
+20000000-0000-0000-0000-000000000006,Design Patterns,Gang of Four,9780201633612,Technology,2,2,0,0,0
+20000000-0000-0000-0000-000000000007,A Brief History of Time,Stephen Hawking,9780553380163,Science,4,3,1,0,0
+20000000-0000-0000-0000-000000000008,Sapiens,Yuval Noah Harari,9780062316097,Non-Fiction,5,5,0,0,0
+20000000-0000-0000-0000-000000000009,The Lean Startup,Eric Ries,9780307887894,Business,3,3,0,0,0
+20000000-0000-0000-0000-000000000010,Zero to One,Peter Thiel,9780804139298,Business,4,4,0,0,0
+20000000-0000-0000-0000-000000000011,Atomic Habits,James Clear,9780735211292,Self-Help,6,3,2,0,0
+20000000-0000-0000-0000-000000000012,The 7 Habits of Highly Effective People,Stephen Covey,9781982137274,Self-Help,3,3,0,0,0
+20000000-0000-0000-0000-000000000013,The Diary of a Young Girl,Anne Frank,9780553296983,History,2,2,0,0,0
+20000000-0000-0000-0000-000000000014,Educated,Tara Westover,9780399590504,Non-Fiction,4,4,0,0,0
+20000000-0000-0000-0000-000000000015,The Immortal Life of Henrietta Lacks,Rebecca Skloot,9781400052189,Science,3,3,0,0,0
+909decb6-887e-4eea-81d6-7fb678fc4708,cong chua ngu nuong,anh,0987654321,Business,4,4,0,0,0
+aab6bd12-3504-4b37-93c6-2b68ea08a0cc,cong chua ngu nuong,anh,0306406152,Business,5,5,0,0,0

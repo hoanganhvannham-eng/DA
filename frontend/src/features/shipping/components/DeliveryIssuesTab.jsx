@@ -25,7 +25,7 @@ const DeliveryIssuesTab = ({ refreshTrigger }) => {
     setError(null)
     try {
       const data = await getDeliveryIssues()
-      setBorrows(Array.isArray(data) ? data : data.borrows || [])
+      setBorrows(Array.isArray(data) ? data : (data.content || data.borrows || []))
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải danh sách vấn đề giao hàng')
     } finally {

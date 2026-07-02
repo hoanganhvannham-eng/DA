@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+// 6
 const faqs = [
   {
     q: 'Làm thế nào để đăng ký tài khoản?',

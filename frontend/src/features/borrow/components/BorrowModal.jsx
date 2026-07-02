@@ -187,7 +187,7 @@ const BorrowModal = ({ bookId, bookTitle, replacementPrice, depositPolicyId, cus
               className="w-full px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-white text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-cyan-500/20"
             />
             <p className="text-xs text-white/30 mt-1">Tối thiểu 1, tối đa 30 ngày.</p>
-          </div>
+            </div>
 
           {matchingRate && (
             <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 space-y-1.5">

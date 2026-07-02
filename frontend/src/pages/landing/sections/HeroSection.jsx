@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { authService } from '../../../features/auth/services/authService'
-
+//  2
 export default function HeroSection() {
   const blobRef = useRef(null)
   const [user, setUser] = useState(null)
-
+ 
   useEffect(() => {
     setUser(authService.getUser())
   }, [])
-
+ 
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!blobRef.current) return
@@ -19,7 +19,7 @@ export default function HeroSection() {
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
-
+ 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
       {/* Animated background blobs */}
@@ -31,7 +31,7 @@ export default function HeroSection() {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
       </div>
-
+ 
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -40,7 +40,7 @@ export default function HeroSection() {
           backgroundSize: '60px 60px',
         }}
       />
-
+ 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Headline */}
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6 leading-none" style={{ textShadow: '0 0 40px rgba(34,211,238,0.3)' }}>
@@ -51,15 +51,15 @@ export default function HeroSection() {
           </span>
           <span className="text-white"> không giới hạn</span>
         </h1>
-
+ 
         {/* Subtitle */}
         <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Tìm kiếm, mượn và trả sách trực tuyến dễ dàng. 
-          Nhận gợi ý sách theo tâm trạng. 
+          Tìm kiếm, mượn và trả sách trực tuyến dễ dàng.
+          Nhận gợi ý sách theo tâm trạng.
           Quản lý phạt và theo dõi đơn giao hàng tận nơi.
         </p>
-
-        {/* CTA Buttons — thay đổi theo trạng thái đăng nhập */}
+ 
+        {/* CTA Buttons */}
         {user ? (
           /* ── Đã đăng nhập ── */
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -69,8 +69,8 @@ export default function HeroSection() {
               </svg>
               Chào mừng trở lại!
             </div>
-            
-              <a href="#books"
+            <a
+              href="#books"
               id="hero-explore-btn"
               className="group inline-flex items-center gap-2 px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold rounded-2xl shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300 hover:-translate-y-0.5"
             >
@@ -96,11 +96,11 @@ export default function HeroSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
             </Link>
-            
+            <a
               href="#books"
               id="hero-view-books-btn"
               className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all duration-300"
-            <a href="">
+            >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
               </svg>
@@ -108,7 +108,7 @@ export default function HeroSection() {
             </a>
           </div>
         )}
-
+ 
         {/* Social proof */}
         <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-6 text-white/40 text-sm">
           <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-
+ 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 animate-bounce">
         <span className="text-xs">Cuộn xuống</span>
@@ -145,3 +145,4 @@ export default function HeroSection() {
     </section>
   )
 }
+ 
