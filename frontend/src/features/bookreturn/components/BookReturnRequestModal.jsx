@@ -9,7 +9,8 @@ export default function BookReturnRequestModal({ record, onClose, onSuccess }) {
   const [error, setError] = useState(null)
   const [profileLoading, setProfileLoading] = useState(false)
 
-  const isDelivery = record.fulfillmentMethod === 'DELIVERY'
+  // const isDelivery = record.fulfillmentMethod === 'DELIVERY'
+  const isDelivery = true
 
   useEffect(() => {
     if (isDelivery && returnMethod === 'SHIPPING') {
@@ -18,7 +19,7 @@ export default function BookReturnRequestModal({ record, onClose, onSuccess }) {
         .then(profile => {
           if (profile.address) setPickupAddress(profile.address)
         })
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => setProfileLoading(false))
     }
   }, [returnMethod, isDelivery])
@@ -68,9 +69,8 @@ export default function BookReturnRequestModal({ record, onClose, onSuccess }) {
           <label className="block text-sm font-medium text-white/70 mb-2">Phương thức trả</label>
           <div className="space-y-2">
             <label
-              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                returnMethod === 'AT_LIBRARY' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'border-white/10 bg-white/[0.03] hover:border-white/20'
-              }`}
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${returnMethod === 'AT_LIBRARY' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+                }`}
             >
               <input
                 type="radio"
@@ -88,9 +88,8 @@ export default function BookReturnRequestModal({ record, onClose, onSuccess }) {
 
             {isDelivery && (
               <label
-                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                  returnMethod === 'SHIPPING' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'border-white/10 bg-white/[0.03] hover:border-white/20'
-                }`}
+                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${returnMethod === 'SHIPPING' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+                  }`}
               >
                 <input
                   type="radio"
